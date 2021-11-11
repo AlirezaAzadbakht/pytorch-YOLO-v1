@@ -17,7 +17,7 @@ import numpy as np
 
 use_gpu = torch.cuda.is_available()
 
-file_root = '/home/xzh/data/VOCdevkit/VOC2012/allimgs/'
+file_root = 'allimgs/'
 learning_rate = 0.001
 num_epochs = 50
 batch_size = 24
@@ -42,7 +42,7 @@ else:
 #     if isinstance(m, nn.Linear):
 #         m.weight.data.normal_(0, 0.01)
 #         m.bias.data.zero_()
-print(net)
+# print(net)
 #net.load_state_dict(torch.load('yolo.pth'))
 print('load pre-trined model')
 if use_resnet:
@@ -50,9 +50,9 @@ if use_resnet:
     new_state_dict = resnet.state_dict()
     dd = net.state_dict()
     for k in new_state_dict.keys():
-        print(k)
+        # print(k)
         if k in dd.keys() and not k.startswith('fc'):
-            print('yes')
+            # print('yes')
             dd[k] = new_state_dict[k]
     net.load_state_dict(dd)
 else:
@@ -60,9 +60,9 @@ else:
     new_state_dict = vgg.state_dict()
     dd = net.state_dict()
     for k in new_state_dict.keys():
-        print(k)
+        # print(k)
         if k in dd.keys() and k.startswith('features'):
-            print('yes')
+            # print('yes')
             dd[k] = new_state_dict[k]
     net.load_state_dict(dd)
 if False:
@@ -86,17 +86,17 @@ optimizer = torch.optim.SGD(params, lr=learning_rate, momentum=0.9, weight_decay
 # optimizer = torch.optim.Adam(net.parameters(),lr=learning_rate,weight_decay=1e-4)
 
 # train_dataset = yoloDataset(root=file_root,list_file=['voc12_trainval.txt','voc07_trainval.txt'],train=True,transform = [transforms.ToTensor()] )
-train_dataset = yoloDataset(root=file_root,list_file=['voc2012.txt','voc2007.txt'],train=True,transform = [transforms.ToTensor()] )
-train_loader = DataLoader(train_dataset,batch_size=batch_size,shuffle=True,num_workers=4)
+train_dataset = yoloDataset(root=file_root,list_file='listfile.txt',train=True,transform = [transforms.ToTensor()] )
+train_loader = DataLoader(train_dataset,batch_size=batch_size,shuffle=True,num_workers=0)
 # test_dataset = yoloDataset(root=file_root,list_file='voc07_test.txt',train=False,transform = [transforms.ToTensor()] )
 test_dataset = yoloDataset(root=file_root,list_file='voc2007test.txt',train=False,transform = [transforms.ToTensor()] )
-test_loader = DataLoader(test_dataset,batch_size=batch_size,shuffle=False,num_workers=4)
+test_loader = DataLoader(test_dataset,batch_size=batch_size,shuffle=False,num_workers=0)
 print('the dataset has %d images' % (len(train_dataset)))
 print('the batch_size is %d' % (batch_size))
 logfile = open('log.txt', 'w')
 
 num_iter = 0
-vis = Visualizer(env='xiong')
+# vis = Visualizer(env='xiong')
 best_test_loss = np.inf
 
 for epoch in range(num_epochs):
@@ -119,7 +119,6 @@ for epoch in range(num_epochs):
     print('Learning Rate for this epoch: {}'.format(learning_rate))
     
     total_loss = 0.
-    
     for i,(images,target) in enumerate(train_loader):
         images = Variable(images)
         target = Variable(target)
@@ -128,16 +127,17 @@ for epoch in range(num_epochs):
         
         pred = net(images)
         loss = criterion(pred,target)
-        total_loss += loss.data[0]
+        # print('KKKKKKKKKKKKKKKKKKKKKKKK',loss.data)
+        total_loss += loss.data.item()
         
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
         if (i+1) % 5 == 0:
             print ('Epoch [%d/%d], Iter [%d/%d] Loss: %.4f, average_loss: %.4f' 
-            %(epoch+1, num_epochs, i+1, len(train_loader), loss.data[0], total_loss / (i+1)))
+            %(epoch+1, num_epochs, i+1, len(train_loader), loss.data.item(), total_loss / (i+1)))
             num_iter += 1
-            vis.plot_train_val(loss_train=total_loss/(i+1))
+            # vis.plot_train_val(loss_train=total_loss/(i+1))
 
     #validation
     validation_loss = 0.0
@@ -150,9 +150,9 @@ for epoch in range(num_epochs):
         
         pred = net(images)
         loss = criterion(pred,target)
-        validation_loss += loss.data[0]
+        validation_loss += loss.data.item()
     validation_loss /= len(test_loader)
-    vis.plot_train_val(loss_val=validation_loss)
+    # vis.plot_train_val(loss_val=validation_loss)
     
     if best_test_loss > validation_loss:
         best_test_loss = validation_loss

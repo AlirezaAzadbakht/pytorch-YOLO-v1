@@ -65,7 +65,7 @@ class yoloLoss(nn.Module):
         coo_target = target_tensor[coo_mask].view(-1,30)
         box_target = coo_target[:,:10].contiguous().view(-1,5)
         class_target = coo_target[:,10:]
-
+        
         # compute not contain obj loss
         noo_pred = pred_tensor[noo_mask].view(-1,30)
         noo_target = target_tensor[noo_mask].view(-1,30)

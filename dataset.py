@@ -34,8 +34,10 @@ class yoloDataset(data.Dataset):
         if isinstance(list_file, list):
             # Cat multiple list files together.
             # This is especially useful for voc07/voc12 combination.
-            tmp_file = '/tmp/listfile.txt'
-            os.system('cat %s > %s' % (' '.join(list_file), tmp_file))
+            tmp_file = 'tmp/listfile.txt'
+            # print('ffffFFFFFFFFFFFFFFFFFFFFFFFF')
+            # print(list_file, list)
+            # os.system('cat %s > %s' % (' '.join(list_file), tmp_file))
             list_file = tmp_file
 
         with open(list_file) as f:
@@ -61,7 +63,9 @@ class yoloDataset(data.Dataset):
 
     def __getitem__(self,idx):
         fname = self.fnames[idx]
+        # print(os.path.join(self.root+fname))
         img = cv2.imread(os.path.join(self.root+fname))
+        # print(img)
         boxes = self.boxes[idx].clone()
         labels = self.labels[idx].clone()
 
@@ -271,8 +275,8 @@ class yoloDataset(data.Dataset):
 def main():
     from torch.utils.data import DataLoader
     import torchvision.transforms as transforms
-    file_root = '/home/xzh/data/VOCdevkit/VOC2012/allimgs/'
-    train_dataset = yoloDataset(root=file_root,list_file='voc12_trainval.txt',train=True,transform = [transforms.ToTensor()] )
+    file_root = 'allimgs/'
+    train_dataset = yoloDataset(root=file_root,list_file='voc2007.txt',train=True,transform = [transforms.ToTensor()] )
     train_loader = DataLoader(train_dataset,batch_size=1,shuffle=False,num_workers=0)
     train_iter = iter(train_loader)
     for i in range(100):
