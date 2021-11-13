@@ -13,6 +13,7 @@ import numpy as np
 import torch
 import torch.utils.data as data
 import torchvision.transforms as transforms
+from transformers import ViTFeatureExtractor
 
 import cv2
 import matplotlib.pyplot as plt
@@ -28,6 +29,8 @@ class yoloDataset(data.Dataset):
         self.boxes = []
         self.labels = []
         self.mean = (123,117,104)#RGB
+
+        self.feature_extractor = ViTFeatureExtractor.from_pretrained('google/vit-base-patch16-224-in21k')
 
         if isinstance(list_file, list):
             # Cat multiple list files together.
@@ -98,7 +101,9 @@ class yoloDataset(data.Dataset):
         for t in self.transform:
             img = t(img)
 
+        img = feature_extractor(images=img, return_tensors="pt")['pixel_values']
         return img,target
+
     def __len__(self):
         return self.num_samples
 
