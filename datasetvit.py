@@ -13,7 +13,7 @@ import numpy as np
 import torch
 import torch.utils.data as data
 import torchvision.transforms as transforms
-from transformers import ViTFeatureExtractor
+import joblib
 
 import cv2
 import matplotlib.pyplot as plt
@@ -30,7 +30,7 @@ class yoloDataset(data.Dataset):
         self.labels = []
         self.mean = (123,117,104)#RGB
 
-        self.feature_extractor = ViTFeatureExtractor.from_pretrained('google/vit-base-patch16-224-in21k')
+        self.feature_extractor = joblib.load('feature_extractor.m')
 
         if isinstance(list_file, list):
             # Cat multiple list files together.

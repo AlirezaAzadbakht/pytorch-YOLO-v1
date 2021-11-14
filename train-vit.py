@@ -16,7 +16,7 @@ use_gpu = torch.cuda.is_available()
 file_root = 'allimgs/'
 learning_rate = 0.001
 num_epochs = 50
-batch_size = 24
+batch_size = 8
 
 print('load pre-trined model')
 
