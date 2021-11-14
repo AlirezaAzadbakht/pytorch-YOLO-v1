@@ -1,5 +1,5 @@
 import os
-from ViTYOLO import ViTYOLO
+from ViTYOLO_simple import ViTYOLO
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 import torch
 from torch.utils.data import DataLoader

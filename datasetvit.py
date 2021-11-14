@@ -101,7 +101,8 @@ class yoloDataset(data.Dataset):
         for t in self.transform:
             img = t(img)
 
-        img = feature_extractor(images=img, return_tensors="pt")['pixel_values']
+        img = self.feature_extractor(images=img, return_tensors="pt")['pixel_values'].squeeze(0)
+
         return img,target
 
     def __len__(self):
@@ -275,19 +276,14 @@ class yoloDataset(data.Dataset):
             im = im.clip(min=0,max=255).astype(np.uint8)
         return im
 
-def main():
-    from torch.utils.data import DataLoader
-    import torchvision.transforms as transforms
-    file_root = 'allimgs/'
-    train_dataset = yoloDataset(root=file_root,list_file='voc2007.txt',train=True,transform = [transforms.ToTensor()] )
-    train_loader = DataLoader(train_dataset,batch_size=1,shuffle=False,num_workers=0)
-    train_iter = iter(train_loader)
-    for i in range(100):
-        img,target = next(train_iter)
-        print(img,target)
 
-
-if __name__ == '__main__':
-    main()
-
-
+# from torch.utils.data import DataLoader
+# import torchvision.transforms as transforms
+# file_root = 'allimage/'
+# train_dataset = yoloDataset(root=file_root,list_file='voc2007.txt',train=True,transform = [transforms.ToTensor()] )
+# train_loader = DataLoader(train_dataset,batch_size=10,shuffle=False,num_workers=0)
+# train_iter = iter(train_loader)
+# for i in range(100):
+#     img,target = next(train_iter)
+#     # print(img,target)
+#     break
